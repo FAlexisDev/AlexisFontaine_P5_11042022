@@ -4,7 +4,7 @@ let products = document.getElementById("items");
 
 // API call
 
-fetch("http://localhost:3000/api/products")
+fetch("http://localhost:3000/api/products/")
   .then(function (res) {
     return res.json();
   })
@@ -18,6 +18,7 @@ fetch("http://localhost:3000/api/products")
       let productsTitle = document.createElement("h3");
       let productsDescription = document.createElement("p");
       // Add element
+      productsLinks.setAttribute("href", "./product.html?id=" + value[i]._id);
       products.appendChild(productsLinks);
       productsLinks.appendChild(productsArticle);
       productsArticle.append(productsImg, productsTitle, productsDescription);
