@@ -5,10 +5,10 @@ let products = document.getElementById("items");
 // API call
 
 fetch("http://localhost:3000/api/products/")
-  .then(function (res) {
+  .then((res) => {
     return res.json();
   })
-  .then(function (value) {
+  .then((value) => {
     console.log(value);
     for (let i = 0; i < value.length; i++) {
       // Create element

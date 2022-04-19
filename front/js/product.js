@@ -11,15 +11,17 @@ let productTitle = document.getElementById("title");
 let productPrice = document.getElementById("price");
 let productDescription = document.getElementById("description");
 let productOptions = document.getElementById("colors");
+let cartButton = document.getElementById("addToCart");
 
 // API Call
 
 fetch("http://localhost:3000/api/products/" + productId)
-  .then(function (res) {
+  .then((res) => {
     return res.json();
   })
   .then(function (value) {
     console.log(value);
+    // Display our product details
     let productImageCreate = document.createElement("img");
     productImageCreate.setAttribute("src", value.imageUrl);
     productImg.appendChild(productImageCreate);
@@ -27,13 +29,41 @@ fetch("http://localhost:3000/api/products/" + productId)
     productPrice.innerHTML = value.price;
     productDescription.innerHTML = value.description;
 
+    // Loop to display the colors of our products
+
     for (let i = 0; i < value.colors.length; i++) {
       let productOptionsList = document.createElement("option");
       productOptionsList.setAttribute("value", value.colors[i]);
       productOptions.appendChild(productOptionsList);
       productOptionsList.innerHTML = value.colors[i];
     }
+
+    // Add products to local storage(cart)
+
+    addToCart.addEventListener("click", function (e) {
+      let productColors = document.getElementById("colors").value;
+      let productQuantity = document.getElementById("quantity").value;
+
+      let productData = {
+        color: productColors,
+        id: value._id,
+        quantity: productQuantity,
+      };
+      e.stopPropagation;
+      let productsInCart = JSON.parse(localStorage.getItem("data"));
+      console.log(productsInCart);
+      if (productsInCart) {
+        productsInCart.push(productData);
+        localStorage.setItem("data", JSON.stringify(productsInCart));
+      } else {
+        productsInCart = [];
+        productsInCart.push(productData);
+        localStorage.setItem("data", JSON.stringify(productsInCart));
+        console.log(productsInCart);
+      }
+    });
   })
+
   .catch(function (err) {});
 
 //Question à poser:  Pourquoi getElementsByClassName n'a pas fonctionné pour afficher mon image ??
