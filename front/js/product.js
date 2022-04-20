@@ -53,7 +53,33 @@ fetch("http://localhost:3000/api/products/" + productId)
       let productsInCart = JSON.parse(localStorage.getItem("data"));
       console.log(productsInCart);
       if (productsInCart) {
-        productsInCart.push(productData);
+        // Vérifier la présence de l'ID dans le tableau.
+        let isProductExist = false;
+        productsInCart.forEach((product) => {
+          if (
+            product.color === productData.color &&
+            product.id === productData.id
+          ) {
+            isProductExist = true;
+          }
+        });
+        // Si existe, incrémente la quantité.
+        if (isProductExist) {
+          for (let i = 0; i < productsInCart.length; i++) {
+            if (
+              productsInCart[i].color === productData.color &&
+              productsInCart[i].id === productData.id
+            ) {
+              productsInCart[i].quantity = `${
+                Number(productData.quantity) +
+                Number(productsInCart[i].quantity)
+              }`;
+            }
+          }
+          // Sinon ==> Ajouter l'élément.
+        } else {
+          productsInCart.push(productData);
+        }
         localStorage.setItem("data", JSON.stringify(productsInCart));
       } else {
         productsInCart = [];
