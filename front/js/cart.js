@@ -144,6 +144,38 @@ fetch("http://localhost:3000/api/products/")
                     localStorage.setItem("data", JSON.stringify(productInCart));
                 });
             });
+
+            // Delete items
+            let productDelete = document.querySelectorAll(".deleteItem");
+            productDelete.forEach((element) => {
+                element.addEventListener("click", function (e) {
+                    let elementTarget = e.target.closest(".cart__item");
+                    elementTarget.remove();
+                    productInCart.find((product) => {
+                        if (
+                            product.id == elementTarget.dataset.id &&
+                            product.color == elementTarget.dataset.color
+                        ) {
+                            let deleteProductInCart =
+                                productInCart.indexOf(product);
+                            console.log(deleteProductInCart);
+                            if (deleteProductInCart === 0) {
+                                productInCart.splice(deleteProductInCart, 1);
+                            } else {
+                                productInCart.splice(
+                                    deleteProductInCart,
+                                    deleteProductInCart
+                                );
+                            }
+                            console.log(productInCart);
+                        }
+                        localStorage.setItem(
+                            "data",
+                            JSON.stringify(productInCart)
+                        );
+                    });
+                });
+            });
         });
     })
     .catch((err) => {});
