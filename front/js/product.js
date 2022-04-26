@@ -19,7 +19,7 @@ fetch("http://localhost:3000/api/products/" + productId)
   .then((res) => {
     return res.json();
   })
-  .then(function (value) {
+  .then((value) => {
     console.log(value);
     // Display our product details
     let productImageCreate = document.createElement("img");
@@ -90,6 +90,6 @@ fetch("http://localhost:3000/api/products/" + productId)
     });
   })
 
-  .catch(function (err) {});
+  .catch((err) => {});
 
 //Question à poser:  Pourquoi getElementsByClassName n'a pas fonctionné pour afficher mon image ??

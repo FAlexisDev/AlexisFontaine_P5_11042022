@@ -30,4 +30,4 @@ fetch("http://localhost:3000/api/products/")
       productsDescription.innerHTML = value[i].description;
     }
   })
-  .catch(function (err) {});
+  .catch((err) => {});
