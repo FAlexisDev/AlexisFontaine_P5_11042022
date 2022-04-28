@@ -117,17 +117,6 @@ fetch("http://localhost:3000/api/products/")
             productDivContentSettingsDelete.appendChild(
                 productDivContentSettingsDeleteInfos
             );
-
-            // Display price and articles in cart.
-            totalPrice =
-                totalPrice + productCompare.price * Number(element.quantity);
-            totalQuantity = totalQuantity + Number(element.quantity);
-
-            let totalQuantityInCart = document.getElementById("totalQuantity");
-            totalQuantityInCart.innerHTML = totalQuantity;
-            let totalPriceInCart = document.getElementById("totalPrice");
-            totalPriceInCart.innerHTML = totalPrice;
-            // Change quantity and delete products
             let productInputQuantity =
                 document.querySelectorAll(".itemQuantity");
 
@@ -144,6 +133,16 @@ fetch("http://localhost:3000/api/products/")
                     localStorage.setItem("data", JSON.stringify(productInCart));
                 });
             });
+            // Display price and articles in cart.
+            totalPrice =
+                totalPrice + productCompare.price * Number(element.quantity);
+            totalQuantity = totalQuantity + Number(element.quantity);
+
+            let totalQuantityInCart = document.getElementById("totalQuantity");
+            totalQuantityInCart.innerHTML = totalQuantity;
+            let totalPriceInCart = document.getElementById("totalPrice");
+            totalPriceInCart.innerHTML = totalPrice;
+            // Change quantity and delete products
 
             // Delete items
             let productDelete = document.querySelectorAll(".deleteItem");
@@ -179,3 +178,89 @@ fetch("http://localhost:3000/api/products/")
         });
     })
     .catch((err) => {});
+
+// Form validation
+
+let cartForm = document.querySelector(".cart__order__form");
+console.log(cartForm);
+cartForm.addEventListener("input", function (e) {
+    console.log(e.target);
+    if (e.target.type === "email") {
+        // prettier-ignore
+        const regexEmail = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+        console.log();
+        if (regexEmail.test(e.target.value) == false) {
+            document.getElementById("emailErrorMsg").style.color = "#ff6961";
+            document.getElementById("emailErrorMsg").innerHTML =
+                "L'email saisi est incorrecte";
+            e.target.style.border = "3px solid #ff6961";
+        } else {
+            document.getElementById("emailErrorMsg").innerHTML = "";
+            e.target.style.border = "3px solid #77dd77";
+        }
+    } else {
+        let errorMsg = e.target.name + "ErrorMsg";
+        if (e.target.value == false) {
+            document.getElementById(errorMsg).style.color = "#ff6961";
+            document.getElementById(errorMsg).innerHTML =
+                "Le champ saisi est incorrect ou incomplet!";
+            console.log(errorMsg);
+            e.target.style.border = "3px solid #ff6961";
+        } else {
+            e.target.style.border = "3px solid #77dd77";
+            document.getElementById(errorMsg).innerHTML = "";
+        }
+    }
+});
+
+cartForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const formData = new FormData(cartForm);
+    let contact = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        address: formData.get("address"),
+        city: formData.get("city"),
+        email: formData.get("email"),
+    };
+    let productObject = productInCart.map((product) => product.id);
+    let products = productObject;
+    console.log(products);
+
+    let order = {
+        contact: contact,
+        products: products,
+    };
+    console.log(order);
+    console.log(contact);
+    console.log(products);
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => {
+            return res.json();
+        })
+        .then((value) => {
+            console.log(value);
+            if (productInCart.length == 0) {
+                alert(
+                    "Merci de bien vouloir selectionner ule ou les canapés de votre choix."
+                );
+            } else {
+                let cartReset = productInCart.splice(0);
+                localStorage.setItem("data", JSON.stringify(productInCart));
+                console.log(value.orderId);
+                window.location.href =
+                    "http://127.0.0.1:5500/front/html/confirmation.html?id=" +
+                    value.orderId;
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
