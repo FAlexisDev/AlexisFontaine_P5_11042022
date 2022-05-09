@@ -1,17 +1,9 @@
-import { addFirstProductInCart, addProductInCart, createElement } from "./utils.js";
+import { addProductInCart, createElement } from "./utils.js";
 //Recover product ID
 
 let url = window.location.href;
 let urlId = new URL(url);
 let productId = urlId.searchParams.get("id");
-
-// var initialisation
-let productImg = document.querySelector(".item__img");
-let productTitle = document.getElementById("title");
-let productPrice = document.getElementById("price");
-let productDescription = document.getElementById("description");
-let productOptions = document.getElementById("colors");
-let cartButton = document.getElementById("addToCart");
 
 // API Call
 
@@ -22,15 +14,20 @@ fetch("http://localhost:3000/api/products/" + productId)
     .then((value) => {
         console.log(value);
         // Display our product details
+        let productImg = document.querySelector(".item__img");
         let productImageCreate = createElement("img", productImg);
         productImageCreate.setAttribute("src", value.imageUrl);
+        let productTitle = document.getElementById("title");
         productTitle.innerHTML = value.name;
+        let productPrice = document.getElementById("price");
         productPrice.innerHTML = value.price;
+        let productDescription = document.getElementById("description");
         productDescription.innerHTML = value.description;
 
         // Loop to display the colors of our products
 
         for (let i = 0; i < value.colors.length; i++) {
+            let productOptions = document.getElementById("colors");
             let productOptionsList = createElement("option", productOptions);
             productOptionsList.setAttribute("value", value.colors[i]);
             productOptionsList.innerHTML = value.colors[i];
@@ -38,7 +35,7 @@ fetch("http://localhost:3000/api/products/" + productId)
 
         // Add products to local storage(cart)
 
-        addToCart.addEventListener("click", function (e) {
+        addToCart.addEventListener("click", (e) => {
             e.stopPropagation;
             let productColors = document.getElementById("colors").value;
             let productQuantity = document.getElementById("quantity").value;
@@ -60,7 +57,7 @@ fetch("http://localhost:3000/api/products/" + productId)
                     }
                 });
             } else {
-                addFirstProductInCart(productData);
+                addProductInCart(productData, productInCart);
             }
             if (productExist) {
                 productInCart.forEach((element, idx) => {
@@ -70,7 +67,7 @@ fetch("http://localhost:3000/api/products/" + productId)
                     }
                 });
             } else {
-                addProductInCart(productData);
+                addProductInCart(productData, productInCart);
             }
         });
     })

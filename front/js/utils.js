@@ -1,5 +1,4 @@
 // Var init
-
 let productInCart = JSON.parse(localStorage.getItem("data"));
 
 /**
@@ -7,18 +6,8 @@ let productInCart = JSON.parse(localStorage.getItem("data"));
  *
  * @param {*} productData Object with product data.
  */
-export function addProductInCart(productData) {
-    productInCart.push(productData);
-    localStorage.setItem("data", JSON.stringify(productInCart));
-}
-/**
- * Init an array and push the first product data in local storage.
- *
- * @param {*} productData Object with product data.
- */
-export function addFirstProductInCart(productData) {
-    let productInCart = [];
-    productInCart.push(productData);
+export function addProductInCart(productData, productInCart) {
+    productInCart ? productInCart.push(productData) : ((productInCart = []), productInCart.push(productData));
     localStorage.setItem("data", JSON.stringify(productInCart));
 }
 
@@ -39,7 +28,7 @@ export function createElement(element, parent) {
  * Display total price and quantity in cart.
  *
  */
-export function updateCartPrice() {
+export function calculateCartPrice() {
     let totalPrice = 0;
     let totalQuantity = 0;
     let productInCart = JSON.parse(localStorage.getItem("data"));
@@ -59,14 +48,14 @@ export function updateCartPrice() {
 export function handleQuantityChange() {
     const productInputQuantity = document.querySelectorAll(".itemQuantity");
     productInputQuantity.forEach((product, idx) => {
-        product.addEventListener("change", function (e) {
+        product.addEventListener("change", (e) => {
             let elementData = e.target.closest(".cart__item");
             let elementDataSelector = elementData.querySelector(".cart__item__content__settings__quantity");
             let elementDataSelectorP = elementDataSelector.querySelector("p");
             elementDataSelectorP.innerText = "Qté : " + this.value;
             productInCart[idx].quantity = this.value;
             localStorage.setItem("data", JSON.stringify(productInCart));
-            updateCartPrice();
+            calculateCartPrice();
         });
     });
 }
@@ -77,7 +66,7 @@ export function handleQuantityChange() {
 export function handleProductDeletion() {
     const productDelete = document.querySelectorAll(".deleteItem");
     productDelete.forEach((elementDelete) => {
-        elementDelete.addEventListener("click", function (e) {
+        elementDelete.addEventListener("click", (e) => {
             e.stopPropagation();
             let elementTarget = e.target.closest(".cart__item");
 
@@ -88,7 +77,7 @@ export function handleProductDeletion() {
                     productInCart.splice(deleteProductInCart, 1);
                 }
                 localStorage.setItem("data", JSON.stringify(productInCart));
-                updateCartPrice();
+                calculateCartPrice();
             });
         });
     });
@@ -100,7 +89,7 @@ export function handleProductDeletion() {
  * @param {*} regexVar const with the Regex's pattern.
  * @param {*} e Input event data.
  */
-export function formTest(regexVar, e) {
+export function formValidation(regexVar, e) {
     let errorMsg = e.target.name + "ErrorMsg";
     if (regexVar.test(e.target.value) === false) {
         document.getElementById(errorMsg).style.color = "#ff6961";
@@ -117,9 +106,39 @@ export function formTest(regexVar, e) {
  *
  * @param {*} value Value of our API request (POST /order).
  */
-export function onValidation(value) {
-    productInCart.splice(0);
-    localStorage.setItem("data", JSON.stringify(productInCart));
+export function onSubmit(value) {
+    localStorage.clear();
     //ajouter clear au local storage
-    window.location.href = "http://127.0.0.1:5500/front/html/confirmation.html?id=" + value.orderId;
+    window.location.href = window.location.origin + "/front/html/confirmation.html?id=" + value.orderId;
+}
+
+/**
+ * Process order from an API request
+ *
+ * @param {*} order Object with contact (object with form data) and order ( array of string with product in cart)
+ * @param {*} cart Array of product in cart
+ */
+export function sendOrder(order, cart) {
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => {
+            return res.json();
+        })
+        .then((value) => {
+            console.log(value);
+            if (cart.length === 0) {
+                alert("Merci de bien vouloir selectionner le ou les canapés de votre choix.");
+            } else {
+                onSubmit(value);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 }
