@@ -52,8 +52,8 @@ export function handleQuantityChange() {
             let elementData = e.target.closest(".cart__item");
             let elementDataSelector = elementData.querySelector(".cart__item__content__settings__quantity");
             let elementDataSelectorP = elementDataSelector.querySelector("p");
-            elementDataSelectorP.innerText = "Qté : " + this.value;
-            productInCart[idx].quantity = this.value;
+            elementDataSelectorP.innerText = "Qté : " + e.target.value;
+            productInCart[idx].quantity = e.target.value;
             localStorage.setItem("data", JSON.stringify(productInCart));
             calculateCartPrice();
         });
