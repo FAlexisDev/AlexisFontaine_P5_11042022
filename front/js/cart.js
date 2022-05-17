@@ -1,7 +1,22 @@
-import { formValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, onSubmit, sendOrder } from "./utils.js";
+import { formValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, sendOrder } from "./utils.js";
 
 // Create cart display
 let productInCart = JSON.parse(localStorage.getItem("data"));
+let productData = [];
+
+productInCart.forEach((product) => {
+    fetch(`http://localhost:3000/api/products/${product.id}`)
+        .then((res) => {
+            return res.json();
+        })
+        .then((value) => {
+            productData.push({ ...product, price: value.price });
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+});
+
 productInCart.forEach((element) => {
     let productInCartArticle = document.getElementById("cart__items");
     let productArticle = createElement("article", productInCartArticle);
@@ -26,9 +41,9 @@ productInCart.forEach((element) => {
     let productColorDescription = createElement("p", productDivContentDescription);
     let productPriceDescription = createElement("p", productDivContentDescription);
 
-    productNameDescription.innerHTML = element.name;
-    productColorDescription.innerHTML = element.color;
-    productPriceDescription.innerHTML = element.price + " " + "€";
+    productNameDescription.innerText = element.name;
+    productColorDescription.innerText = element.color;
+    productPriceDescription.innerText = element.price + " " + "€";
     let productDivContentSettings = createElement("div", productDivContent);
     productDivContentSettings.setAttribute("class", "cart__item__content__settings");
     let productDivContentSettingsQuantity = createElement("div", productDivContentSettings);
@@ -37,7 +52,7 @@ productInCart.forEach((element) => {
     productDivContentSettingsDelete.setAttribute("class", "cart__item__content__settings__delete");
 
     let productDivContentSettingsQuantityInfos = createElement("p", productDivContentSettingsQuantity);
-    productDivContentSettingsQuantityInfos.innerHTML = "Qté :" + " " + element.quantity + " ";
+    productDivContentSettingsQuantityInfos.innerText = "Qté :" + " " + element.quantity + " ";
     let productDivContentSettingsQuantityInput = createElement("input", productDivContentSettingsQuantity);
     productDivContentSettingsQuantityInput.setAttribute("type", "number");
     productDivContentSettingsQuantityInput.setAttribute("class", "itemQuantity");
@@ -48,7 +63,7 @@ productInCart.forEach((element) => {
 
     let productDivContentSettingsDeleteInfos = createElement("p", productDivContentSettingsDelete);
     productDivContentSettingsDeleteInfos.setAttribute("class", "deleteItem");
-    productDivContentSettingsDeleteInfos.innerHTML = "Supprimer";
+    productDivContentSettingsDeleteInfos.innerText = "Supprimer";
 });
 
 // Display total price and articles in cart.

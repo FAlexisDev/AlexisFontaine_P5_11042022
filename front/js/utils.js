@@ -38,8 +38,8 @@ export function calculateCartPrice() {
         totalPrice += Number(element.price) * Number(element.quantity);
         totalQuantity += Number(element.quantity);
     });
-    totalPriceInCart.innerHTML = totalPrice;
-    totalQuantityInCart.innerHTML = totalQuantity;
+    totalPriceInCart.innerText = totalPrice;
+    totalQuantityInCart.innerText = totalQuantity;
 }
 
 /**
@@ -93,11 +93,11 @@ export function formValidation(regexVar, e) {
     let errorMsg = e.target.name + "ErrorMsg";
     if (regexVar.test(e.target.value) === false) {
         document.getElementById(errorMsg).style.color = "#ff6961";
-        document.getElementById(errorMsg).innerHTML = "Le champ saisi est incorrect ou incomplet!";
+        document.getElementById(errorMsg).innerText = "Le champ saisi est incorrect ou incomplet!";
         e.target.style.border = "3px solid #ff6961";
     } else {
         e.target.style.border = "3px solid #77dd77";
-        document.getElementById(errorMsg).innerHTML = "";
+        document.getElementById(errorMsg).innerText = "";
     }
 }
 

@@ -1,10 +1,8 @@
 import { addProductInCart, createElement } from "./utils.js";
 //Recover product ID
 
-let url = window.location.href;
-let urlId = new URL(url);
-let productId = urlId.searchParams.get("id");
-
+let serachParams = new URLSearchParams(window.location.search);
+let productId = serachParams.get("id");
 // API Call
 
 fetch("http://localhost:3000/api/products/" + productId)
@@ -18,11 +16,11 @@ fetch("http://localhost:3000/api/products/" + productId)
         let productImageCreate = createElement("img", productImg);
         productImageCreate.setAttribute("src", value.imageUrl);
         let productTitle = document.getElementById("title");
-        productTitle.innerHTML = value.name;
+        productTitle.innerText = value.name;
         let productPrice = document.getElementById("price");
-        productPrice.innerHTML = value.price;
+        productPrice.innerText = value.price;
         let productDescription = document.getElementById("description");
-        productDescription.innerHTML = value.description;
+        productDescription.innerText = value.description;
 
         // Loop to display the colors of our products
 
@@ -30,7 +28,7 @@ fetch("http://localhost:3000/api/products/" + productId)
             let productOptions = document.getElementById("colors");
             let productOptionsList = createElement("option", productOptions);
             productOptionsList.setAttribute("value", value.colors[i]);
-            productOptionsList.innerHTML = value.colors[i];
+            productOptionsList.innerText = value.colors[i];
         }
 
         // Add products to local storage(cart)
@@ -48,26 +46,30 @@ fetch("http://localhost:3000/api/products/" + productId)
                 imageUrl: value.imageUrl,
                 name: value.name,
             };
-            let productExist = false;
-            let productInCart = JSON.parse(localStorage.getItem("data"));
-            if (productInCart) {
-                productInCart.forEach((element) => {
-                    if (element.id === productData.id && element.color === productData.color) {
-                        productExist = true;
-                    }
-                });
+            if (productColors == "" || productQuantity == 0) {
+                alert("Merci de bien vouloir choisir la couleur du produit ainsi que la quantité.");
             } else {
-                addProductInCart(productData, productInCart);
-            }
-            if (productExist) {
-                productInCart.forEach((element, idx) => {
-                    if (productInCart[idx].color === productData.color && productInCart[idx].id === productData.id) {
-                        productInCart[idx].quantity = Number(productInCart[idx].quantity) + Number(productData.quantity);
-                        localStorage.setItem("data", JSON.stringify(productInCart));
-                    }
-                });
-            } else {
-                addProductInCart(productData, productInCart);
+                let productExist = false;
+                let productInCart = JSON.parse(localStorage.getItem("data"));
+                if (productInCart) {
+                    productInCart.forEach((element) => {
+                        if (element.id === productData.id && element.color === productData.color) {
+                            productExist = true;
+                        }
+                    });
+                } else {
+                    addProductInCart(productData, productInCart);
+                }
+                if (productExist) {
+                    productInCart.forEach((element, idx) => {
+                        if (productInCart[idx].color === productData.color && productInCart[idx].id === productData.id) {
+                            productInCart[idx].quantity = Number(productInCart[idx].quantity) + Number(productData.quantity);
+                            localStorage.setItem("data", JSON.stringify(productInCart));
+                        }
+                    });
+                } else {
+                    addProductInCart(productData, productInCart);
+                }
             }
         });
     })

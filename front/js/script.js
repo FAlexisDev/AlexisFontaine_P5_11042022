@@ -1,5 +1,4 @@
 import { createElement } from "./utils.js";
-//Var creation
 
 // API call
 
@@ -23,9 +22,9 @@ fetch("http://localhost:3000/api/products/")
             productsImg.setAttribute("src", element.imageUrl);
             productsImg.setAttribute("alt", element.altTxt);
             productsTitle.classList.add("productName");
-            productsTitle.innerHTML = element.name;
+            productsTitle.innerText = element.name;
             productsDescription.classList.add("productDescription");
-            productsDescription.innerHTML = element.description;
+            productsDescription.innerText = element.description;
         });
     })
     .catch((err) => {});
