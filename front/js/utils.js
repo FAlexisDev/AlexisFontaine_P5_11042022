@@ -89,7 +89,8 @@ export function handleProductDeletion() {
  * @param {*} regexVar const with the Regex's pattern.
  * @param {*} e Input event data.
  */
-export function formValidation(regexVar, e) {
+export function regexValidation(regexVar, e) {
+    let regexInfos = false;
     let errorMsg = e.target.name + "ErrorMsg";
     if (regexVar.test(e.target.value) === false) {
         document.getElementById(errorMsg).style.color = "#ff6961";
@@ -98,7 +99,9 @@ export function formValidation(regexVar, e) {
     } else {
         e.target.style.border = "3px solid #77dd77";
         document.getElementById(errorMsg).innerText = "";
+        regexInfos = true;
     }
+    return regexInfos;
 }
 
 /**

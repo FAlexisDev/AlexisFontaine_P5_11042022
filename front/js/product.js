@@ -1,6 +1,6 @@
 import { addProductInCart, createElement } from "./utils.js";
 //Recover product ID
-
+console.log(window.location.href);
 let serachParams = new URLSearchParams(window.location.search);
 let productId = serachParams.get("id");
 // API Call

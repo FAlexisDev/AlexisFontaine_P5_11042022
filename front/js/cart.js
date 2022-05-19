@@ -1,21 +1,21 @@
-import { formValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, sendOrder } from "./utils.js";
+import { regexValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, sendOrder } from "./utils.js";
 
 // Create cart display
 let productInCart = JSON.parse(localStorage.getItem("data"));
-let productData = [];
+// let productData = [];
 
-productInCart.forEach((product) => {
-    fetch(`http://localhost:3000/api/products/${product.id}`)
-        .then((res) => {
-            return res.json();
-        })
-        .then((value) => {
-            productData.push({ ...product, price: value.price });
-        })
-        .catch((err) => {
-            console.error(err);
-        });
-});
+// // productInCart.forEach((product) => {
+// //     fetch(`http://localhost:3000/api/products/${product.id}`)
+// //         .then((res) => {
+// //             return res.json();
+// //         })
+// //         .then((value) => {
+// //             productData.push({ ...product, price: value.price });
+// //         })
+// //         .catch((err) => {
+// //             console.error(err);
+// //         });
+// // });
 
 productInCart.forEach((element) => {
     let productInCartArticle = document.getElementById("cart__items");
@@ -78,21 +78,22 @@ handleProductDeletion();
 // Form validation
 
 let cartForm = document.querySelector(".cart__order__form");
+let regexInfos = false;
+let regex = {
+    lastName: /^\D+$/,
+    firstName: /^\D+$/,
+    city: /^\D+$/,
+    email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    address: /./,
+};
 
 cartForm.addEventListener("input", (e) => {
-    let regex = {
-        lastName: /^\D+$/,
-        firstName: /^\D+$/,
-        city: /^\D+$/,
-        email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        address: /./,
-    };
-
-    formValidation(regex[e.target.name], e);
+    regexValidation(regex[e.target.name], e);
 });
 
 cartForm.addEventListener("submit", (e) => {
     e.preventDefault();
+
     const formData = new FormData(cartForm);
     let contact = {
         firstName: formData.get("firstName"),
@@ -108,6 +109,15 @@ cartForm.addEventListener("submit", (e) => {
         contact: contact,
         products: products,
     };
-
-    sendOrder(order, productInCart);
+    if (
+        regex.lastName.test(formData.get("lastName")) &&
+        regex.firstName.test(formData.get("firstName")) &&
+        regex.city.test(formData.get("city")) &&
+        regex.email.test(formData.get("email")) &&
+        regex.address.test(formData.get("address"))
+    ) {
+        sendOrder(order, productInCart);
+    } else {
+        alert("Merci de bien vouloir compléter correctement les champs du formulaire.");
+    }
 });
