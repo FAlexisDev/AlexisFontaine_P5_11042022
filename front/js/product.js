@@ -5,7 +5,7 @@ let serachParams = new URLSearchParams(window.location.search);
 let productId = serachParams.get("id");
 // API Call
 
-fetch("http://localhost:3000/api/products/" + productId)
+fetch(`http://localhost:3000/api/products/${productId}`)
     .then((res) => {
         return res.json();
     })
@@ -38,7 +38,7 @@ fetch("http://localhost:3000/api/products/" + productId)
             let productColors = document.getElementById("colors").value;
             let productQuantity = document.getElementById("quantity").value;
             let productData = {
-                price: value.price,
+                // price: value.price,
                 color: productColors,
                 quantity: productQuantity,
                 id: value._id,

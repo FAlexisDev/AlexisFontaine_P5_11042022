@@ -1,79 +1,78 @@
-import { regexValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, sendOrder } from "./utils.js";
+import { formValidation, handleProductDeletion, createElement, handleQuantityChange, calculateCartPrice, sendOrder } from "./utils.js";
 
 // Create cart display
 let productInCart = JSON.parse(localStorage.getItem("data"));
-// let productData = [];
-
-// // productInCart.forEach((product) => {
-// //     fetch(`http://localhost:3000/api/products/${product.id}`)
-// //         .then((res) => {
-// //             return res.json();
-// //         })
-// //         .then((value) => {
-// //             productData.push({ ...product, price: value.price });
-// //         })
-// //         .catch((err) => {
-// //             console.error(err);
-// //         });
-// // });
 
 productInCart.forEach((element) => {
-    let productInCartArticle = document.getElementById("cart__items");
-    let productArticle = createElement("article", productInCartArticle);
-    productArticle.setAttribute("data-id", element.id);
-    productArticle.setAttribute("class", "cart__item");
-    productArticle.setAttribute("data-color", element.color);
+    fetch(`http://localhost:3000/api/products/${element.id}`)
+        .then((res) => {
+            return res.json();
+        })
+        .then((value) => {
+            // Display product in cart
 
-    let productDivImg = createElement("div", productArticle);
-    productDivImg.setAttribute("class", "cart__item__img");
+            let productInCartArticle = document.getElementById("cart__items");
+            let productArticle = createElement("article", productInCartArticle);
+            productArticle.setAttribute("data-id", element.id);
+            productArticle.setAttribute("class", "cart__item");
+            productArticle.setAttribute("data-color", element.color);
 
-    let productImg = createElement("img", productDivImg);
-    productImg.setAttribute("src", element.imageUrl);
-    productImg.setAttribute("alt", element.altTxt);
+            let productDivImg = createElement("div", productArticle);
+            productDivImg.setAttribute("class", "cart__item__img");
 
-    let productDivContent = createElement("div", productArticle);
-    productDivContent.setAttribute("class", "cart__item__content");
+            let productImg = createElement("img", productDivImg);
+            productImg.setAttribute("src", element.imageUrl);
+            productImg.setAttribute("alt", element.altTxt);
 
-    let productDivContentDescription = createElement("div", productDivContent);
-    productDivContentDescription.setAttribute("class", "cart__item__content__description");
+            let productDivContent = createElement("div", productArticle);
+            productDivContent.setAttribute("class", "cart__item__content");
 
-    let productNameDescription = createElement("h2", productDivContentDescription);
-    let productColorDescription = createElement("p", productDivContentDescription);
-    let productPriceDescription = createElement("p", productDivContentDescription);
+            let productDivContentDescription = createElement("div", productDivContent);
+            productDivContentDescription.setAttribute("class", "cart__item__content__description");
 
-    productNameDescription.innerText = element.name;
-    productColorDescription.innerText = element.color;
-    productPriceDescription.innerText = element.price + " " + "€";
-    let productDivContentSettings = createElement("div", productDivContent);
-    productDivContentSettings.setAttribute("class", "cart__item__content__settings");
-    let productDivContentSettingsQuantity = createElement("div", productDivContentSettings);
-    productDivContentSettingsQuantity.setAttribute("class", "cart__item__content__settings__quantity");
-    let productDivContentSettingsDelete = createElement("div", productDivContentSettings);
-    productDivContentSettingsDelete.setAttribute("class", "cart__item__content__settings__delete");
+            let productNameDescription = createElement("h2", productDivContentDescription);
+            let productColorDescription = createElement("p", productDivContentDescription);
+            let productPriceDescription = createElement("p", productDivContentDescription);
 
-    let productDivContentSettingsQuantityInfos = createElement("p", productDivContentSettingsQuantity);
-    productDivContentSettingsQuantityInfos.innerText = "Qté :" + " " + element.quantity + " ";
-    let productDivContentSettingsQuantityInput = createElement("input", productDivContentSettingsQuantity);
-    productDivContentSettingsQuantityInput.setAttribute("type", "number");
-    productDivContentSettingsQuantityInput.setAttribute("class", "itemQuantity");
-    productDivContentSettingsQuantityInput.setAttribute("min", "1");
-    productDivContentSettingsQuantityInput.setAttribute("max", "100");
-    productDivContentSettingsQuantityInput.setAttribute("name", "itemQuantity");
-    productDivContentSettingsQuantityInput.setAttribute("value", element.quantity);
+            productNameDescription.innerText = element.name;
+            productColorDescription.innerText = element.color;
+            productPriceDescription.innerText = value.price + " " + "€";
+            let productDivContentSettings = createElement("div", productDivContent);
+            productDivContentSettings.setAttribute("class", "cart__item__content__settings");
+            let productDivContentSettingsQuantity = createElement("div", productDivContentSettings);
+            productDivContentSettingsQuantity.setAttribute("class", "cart__item__content__settings__quantity");
+            let productDivContentSettingsDelete = createElement("div", productDivContentSettings);
+            productDivContentSettingsDelete.setAttribute("class", "cart__item__content__settings__delete");
 
-    let productDivContentSettingsDeleteInfos = createElement("p", productDivContentSettingsDelete);
-    productDivContentSettingsDeleteInfos.setAttribute("class", "deleteItem");
-    productDivContentSettingsDeleteInfos.innerText = "Supprimer";
+            let productDivContentSettingsQuantityInfos = createElement("p", productDivContentSettingsQuantity);
+            productDivContentSettingsQuantityInfos.innerText = "Qté :" + " " + element.quantity + " ";
+            let productDivContentSettingsQuantityInput = createElement("input", productDivContentSettingsQuantity);
+
+            productDivContentSettingsQuantityInput.setAttribute("type", "number");
+            productDivContentSettingsQuantityInput.setAttribute("class", "itemQuantity");
+            productDivContentSettingsQuantityInput.setAttribute("min", "1");
+            productDivContentSettingsQuantityInput.setAttribute("max", "100");
+            productDivContentSettingsQuantityInput.setAttribute("name", "itemQuantity");
+            productDivContentSettingsQuantityInput.setAttribute("value", element.quantity);
+
+            let productDivContentSettingsDeleteInfos = createElement("p", productDivContentSettingsDelete);
+            productDivContentSettingsDeleteInfos.setAttribute("class", "deleteItem");
+            productDivContentSettingsDeleteInfos.innerText = "Supprimer";
+
+            // Display total price and articles in cart.
+            calculateCartPrice(value.price);
+
+            // Change quantity
+            handleQuantityChange(value.price);
+
+            // Delete items
+            handleProductDeletion(value.price);
+        })
+
+        .catch((err) => {
+            console.error(err);
+        });
 });
-
-// Display total price and articles in cart.
-calculateCartPrice();
-
-// Change quantity
-handleQuantityChange();
-
-// Delete items
-handleProductDeletion();
 
 // Form validation
 
@@ -88,7 +87,7 @@ let regex = {
 };
 
 cartForm.addEventListener("input", (e) => {
-    regexValidation(regex[e.target.name], e);
+    formValidation(regex[e.target.name], e);
 });
 
 cartForm.addEventListener("submit", (e) => {

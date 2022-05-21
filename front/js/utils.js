@@ -27,15 +27,16 @@ export function createElement(element, parent) {
 /**
  * Display total price and quantity in cart.
  *
+ * @param {*} value Price value of our API request (GET /id).
  */
-export function calculateCartPrice() {
+export function calculateCartPrice(value) {
     let totalPrice = 0;
     let totalQuantity = 0;
     let productInCart = JSON.parse(localStorage.getItem("data"));
     let totalPriceInCart = document.getElementById("totalPrice");
     let totalQuantityInCart = document.getElementById("totalQuantity");
     productInCart.forEach((element) => {
-        totalPrice += Number(element.price) * Number(element.quantity);
+        totalPrice += Number(value) * Number(element.quantity);
         totalQuantity += Number(element.quantity);
     });
     totalPriceInCart.innerText = totalPrice;
@@ -44,26 +45,31 @@ export function calculateCartPrice() {
 
 /**
  * Listen event on input change's, update quantity in localStorage and DOM.
+ *
+ * @param {*} value Price value of our API request (GET /id).
  */
-export function handleQuantityChange() {
+export function handleQuantityChange(value) {
     const productInputQuantity = document.querySelectorAll(".itemQuantity");
-    productInputQuantity.forEach((product, idx) => {
-        product.addEventListener("change", (e) => {
+    console.log(productInputQuantity);
+    productInputQuantity.forEach((element, idx) => {
+        element.addEventListener("change", (e) => {
             let elementData = e.target.closest(".cart__item");
             let elementDataSelector = elementData.querySelector(".cart__item__content__settings__quantity");
             let elementDataSelectorP = elementDataSelector.querySelector("p");
             elementDataSelectorP.innerText = "Qté : " + e.target.value;
             productInCart[idx].quantity = e.target.value;
             localStorage.setItem("data", JSON.stringify(productInCart));
-            calculateCartPrice();
+            calculateCartPrice(value);
         });
     });
 }
 
 /**
  * Listen event on paragraph (delete) click's and update localStorage by removing it.
+ *
+ * @param {*} value Price value of our API request (GET /id).
  */
-export function handleProductDeletion() {
+export function handleProductDeletion(value) {
     const productDelete = document.querySelectorAll(".deleteItem");
     productDelete.forEach((elementDelete) => {
         elementDelete.addEventListener("click", (e) => {
@@ -77,7 +83,7 @@ export function handleProductDeletion() {
                     productInCart.splice(deleteProductInCart, 1);
                 }
                 localStorage.setItem("data", JSON.stringify(productInCart));
-                calculateCartPrice();
+                calculateCartPrice(value);
             });
         });
     });
@@ -89,7 +95,7 @@ export function handleProductDeletion() {
  * @param {*} regexVar const with the Regex's pattern.
  * @param {*} e Input event data.
  */
-export function regexValidation(regexVar, e) {
+export function formValidation(regexVar, e) {
     let regexInfos = false;
     let errorMsg = e.target.name + "ErrorMsg";
     if (regexVar.test(e.target.value) === false) {

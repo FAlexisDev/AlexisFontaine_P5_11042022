@@ -18,7 +18,7 @@ fetch("http://localhost:3000/api/products/")
             let productsDescription = createElement("p", productsArticle);
 
             //Add element
-            productsLinks.setAttribute("href", "./product.html?id=" + element._id);
+            productsLinks.setAttribute("href", `./product.html?id=${element._id}`);
             productsImg.setAttribute("src", element.imageUrl);
             productsImg.setAttribute("alt", element.altTxt);
             productsTitle.classList.add("productName");
