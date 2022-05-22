@@ -3,14 +3,26 @@ import { formValidation, handleProductDeletion, createElement, handleQuantityCha
 // Create cart display
 let productInCart = JSON.parse(localStorage.getItem("data"));
 
-productInCart.forEach((element) => {
-    fetch(`http://localhost:3000/api/products/${element.id}`)
-        .then((res) => {
-            return res.json();
-        })
-        .then((value) => {
-            // Display product in cart
+fetch("http://localhost:3000/api/products/")
+    .then((res) => res.json())
+    .then((value) => {
+        const products = [];
+        const productIds = productInCart.map((product) => product.id);
+        productIds.forEach((productId) => {
+            // Get cart element
+            let currentProduct = productInCart.find((element) => element.id === productId);
 
+            // Get request element
+            let currentProductResult = value.find((element) => element._id === productId);
+
+            products.push({
+                ...currentProduct,
+                price: currentProductResult.price,
+            });
+        });
+
+        products.forEach((element) => {
+            // console.log(element);
             let productInCartArticle = document.getElementById("cart__items");
             let productArticle = createElement("article", productInCartArticle);
             productArticle.setAttribute("data-id", element.id);
@@ -36,7 +48,7 @@ productInCart.forEach((element) => {
 
             productNameDescription.innerText = element.name;
             productColorDescription.innerText = element.color;
-            productPriceDescription.innerText = value.price + " " + "€";
+            productPriceDescription.innerText = element.price + " " + "€";
             let productDivContentSettings = createElement("div", productDivContent);
             productDivContentSettings.setAttribute("class", "cart__item__content__settings");
             let productDivContentSettingsQuantity = createElement("div", productDivContentSettings);
@@ -58,21 +70,20 @@ productInCart.forEach((element) => {
             let productDivContentSettingsDeleteInfos = createElement("p", productDivContentSettingsDelete);
             productDivContentSettingsDeleteInfos.setAttribute("class", "deleteItem");
             productDivContentSettingsDeleteInfos.innerText = "Supprimer";
-
-            // Display total price and articles in cart.
-            calculateCartPrice(value.price);
-
-            // Change quantity
-            handleQuantityChange(value.price);
-
-            // Delete items
-            handleProductDeletion(value.price);
-        })
-
-        .catch((err) => {
-            console.error(err);
         });
-});
+
+        // Display total price and articles in cart.
+        calculateCartPrice(products);
+
+        // // Change quantity
+        handleQuantityChange(products);
+
+        // // Delete items
+        handleProductDeletion(products);
+    })
+    .catch((err) => {
+        console.error(err);
+    });
 
 // Form validation
 

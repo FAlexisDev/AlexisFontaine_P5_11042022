@@ -27,18 +27,19 @@ export function createElement(element, parent) {
 /**
  * Display total price and quantity in cart.
  *
- * @param {*} value Price value of our API request (GET /id).
+ * @param {*} products Cart products with price.
  */
-export function calculateCartPrice(value) {
+export function calculateCartPrice(products) {
     let totalPrice = 0;
     let totalQuantity = 0;
-    let productInCart = JSON.parse(localStorage.getItem("data"));
     let totalPriceInCart = document.getElementById("totalPrice");
     let totalQuantityInCart = document.getElementById("totalQuantity");
-    productInCart.forEach((element) => {
-        totalPrice += Number(value) * Number(element.quantity);
+
+    products.forEach((element) => {
+        totalPrice += element.price * Number(element.quantity);
         totalQuantity += Number(element.quantity);
     });
+
     totalPriceInCart.innerText = totalPrice;
     totalQuantityInCart.innerText = totalQuantity;
 }
@@ -46,45 +47,44 @@ export function calculateCartPrice(value) {
 /**
  * Listen event on input change's, update quantity in localStorage and DOM.
  *
- * @param {*} value Price value of our API request (GET /id).
+ * @param {*} products Cart products with price.
  */
-export function handleQuantityChange(value) {
+export function handleQuantityChange(products) {
     const productInputQuantity = document.querySelectorAll(".itemQuantity");
-    console.log(productInputQuantity);
     productInputQuantity.forEach((element, idx) => {
         element.addEventListener("change", (e) => {
             let elementData = e.target.closest(".cart__item");
             let elementDataSelector = elementData.querySelector(".cart__item__content__settings__quantity");
             let elementDataSelectorP = elementDataSelector.querySelector("p");
+
             elementDataSelectorP.innerText = "Qté : " + e.target.value;
             productInCart[idx].quantity = e.target.value;
+            products[idx].quantity = e.target.value;
+
             localStorage.setItem("data", JSON.stringify(productInCart));
-            calculateCartPrice(value);
+            calculateCartPrice(products);
         });
     });
 }
-
 /**
  * Listen event on paragraph (delete) click's and update localStorage by removing it.
  *
- * @param {*} value Price value of our API request (GET /id).
+ * @param {*} products Cart products with price.
  */
-export function handleProductDeletion(value) {
+export function handleProductDeletion(products) {
     const productDelete = document.querySelectorAll(".deleteItem");
     productDelete.forEach((elementDelete) => {
         elementDelete.addEventListener("click", (e) => {
             e.stopPropagation();
-            let elementTarget = e.target.closest(".cart__item");
+            e.target.closest(".cart__item").remove();
 
-            elementTarget.remove();
-            productInCart.find((product) => {
-                if (product.id == elementTarget.dataset.id && product.color == elementTarget.dataset.color) {
-                    let deleteProductInCart = productInCart.indexOf(product);
-                    productInCart.splice(deleteProductInCart, 1);
-                }
-                localStorage.setItem("data", JSON.stringify(productInCart));
-                calculateCartPrice(value);
-            });
+            let product = productInCart.find((product) => product.id == elementTarget.dataset.id && product.color == elementTarget.dataset.color);
+            let deleteProductInCart = productInCart.indexOf(product);
+            productInCart.splice(deleteProductInCart, 1);
+            products.splice(deleteProductInCart, 1);
+
+            localStorage.setItem("data", JSON.stringify(productInCart));
+            calculateCartPrice(products);
         });
     });
 }
