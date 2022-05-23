@@ -57,8 +57,6 @@ fetch(`http://localhost:3000/api/products/${productId}`)
                             productExist = true;
                         }
                     });
-                } else {
-                    addProductInCart(productData, productInCart);
                 }
                 if (productExist) {
                     productInCart.forEach((element, idx) => {
@@ -68,7 +66,7 @@ fetch(`http://localhost:3000/api/products/${productId}`)
                         }
                     });
                 } else {
-                    addProductInCart(productData, productInCart);
+                    addProductInCart(productData);
                 }
             }
         });

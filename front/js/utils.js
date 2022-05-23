@@ -1,12 +1,12 @@
 // Var init
-let productInCart = JSON.parse(localStorage.getItem("data"));
 
 /**
  * Add product data in local storage
  *
  * @param {*} productData Object with product data.
  */
-export function addProductInCart(productData, productInCart) {
+export function addProductInCart(productData) {
+    let productInCart = JSON.parse(localStorage.getItem("data"));
     productInCart ? productInCart.push(productData) : ((productInCart = []), productInCart.push(productData));
     localStorage.setItem("data", JSON.stringify(productInCart));
 }
@@ -50,6 +50,7 @@ export function calculateCartPrice(products) {
  * @param {*} products Cart products with price.
  */
 export function handleQuantityChange(products) {
+    let productInCart = JSON.parse(localStorage.getItem("data"));
     const productInputQuantity = document.querySelectorAll(".itemQuantity");
     productInputQuantity.forEach((element, idx) => {
         element.addEventListener("change", (e) => {
@@ -72,18 +73,23 @@ export function handleQuantityChange(products) {
  * @param {*} products Cart products with price.
  */
 export function handleProductDeletion(products) {
+    let productInCart = JSON.parse(localStorage.getItem("data"));
     const productDelete = document.querySelectorAll(".deleteItem");
     productDelete.forEach((elementDelete) => {
         elementDelete.addEventListener("click", (e) => {
             e.stopPropagation();
-            e.target.closest(".cart__item").remove();
+            let elementTarget = e.target.closest(".cart__item");
 
             let product = productInCart.find((product) => product.id == elementTarget.dataset.id && product.color == elementTarget.dataset.color);
             let deleteProductInCart = productInCart.indexOf(product);
+
             productInCart.splice(deleteProductInCart, 1);
             products.splice(deleteProductInCart, 1);
+            elementTarget.remove();
 
             localStorage.setItem("data", JSON.stringify(productInCart));
+
+            handleQuantityChange(products);
             calculateCartPrice(products);
         });
     });

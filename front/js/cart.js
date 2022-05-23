@@ -7,13 +7,16 @@ fetch("http://localhost:3000/api/products/")
     .then((res) => res.json())
     .then((value) => {
         const products = [];
-        const productIds = productInCart.map((product) => product.id);
-        productIds.forEach((productId) => {
+        const productFilters = productInCart.map((product) => {
+            return { id: product.id, color: product.color };
+        });
+
+        productFilters.forEach((productFilter) => {
             // Get cart element
-            let currentProduct = productInCart.find((element) => element.id === productId);
+            let currentProduct = productInCart.find((element) => element.id === productFilter.id && element.color === productFilter.color);
 
             // Get request element
-            let currentProductResult = value.find((element) => element._id === productId);
+            let currentProductResult = value.find((element) => element._id === productFilter.id);
 
             products.push({
                 ...currentProduct,
@@ -75,10 +78,10 @@ fetch("http://localhost:3000/api/products/")
         // Display total price and articles in cart.
         calculateCartPrice(products);
 
-        // // Change quantity
+        // Change quantity
         handleQuantityChange(products);
 
-        // // Delete items
+        // Delete items
         handleProductDeletion(products);
     })
     .catch((err) => {
